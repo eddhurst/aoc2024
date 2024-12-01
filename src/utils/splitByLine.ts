@@ -1,3 +1,5 @@
-export const splitByLine: (file: string) => string[] = (file) => {
-  return file.split("\n");
+type SplitByLine = (file: string) => string[];
+
+export const splitByLine: SplitByLine = (file) => {
+  return file.split("\n").filter((e) => e);
 };

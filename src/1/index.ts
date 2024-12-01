@@ -1,13 +1,22 @@
-import { process } from "./process";
-import { sample } from "./1.sample";
-import { prompt } from "./1.prompt";
+import { processInput } from "./processInput";
+import { sample } from "./prompts/1.sample";
+import { prompt } from "./prompts/1.prompt";
+import { logResult } from "../utils/log";
+import { addProgressBar, progressComplete } from "../utils/progressBar";
 
 const run = (input: string) => {
-  const { list, similarities } = process(input);
+  const { list, similarities } = processInput(input);
+
+  const calculatingBar = addProgressBar(list.length, "Calculating Results");
 
   return list.reduce((acc, item) => {
-    return acc + parseInt(item, 10) * (similarities[item] || 0);
+    calculatingBar.increment();
+    return acc + item * (similarities[item] || 0);
   }, 0);
 };
 
-console.info(run(prompt));
+const result = run(prompt);
+
+progressComplete();
+
+logResult(result);
