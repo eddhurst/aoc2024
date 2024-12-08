@@ -61,9 +61,9 @@ export const willGuardLoop: WillGuardLoop = (
         break;
     }
     //
-    // console.info(guardPosition, "guardPosition");
-    // console.info(newPosition, "newPosition");
-    // console.info("-----");
+    console.info(guardPosition, "guardPosition");
+    console.info(newPosition, "newPosition");
+    console.info("-----");
     guardPosition = newPosition;
   }
 
