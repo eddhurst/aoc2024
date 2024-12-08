@@ -7,3 +7,5 @@ export interface Guard {
 export type Obstacles = Record<string, number[]>;
 
 export type RoomSize = { width: number; height: number };
+
+export type Steps = Record<string, Record<string, { direction: string[] }>>;

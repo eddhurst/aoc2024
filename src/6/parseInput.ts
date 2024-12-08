@@ -1,21 +1,18 @@
 import { splitByLine } from "../utils/splitByLine";
-import { Guard, Obstacles } from "./types";
+import { Guard, Obstacles, Steps } from "./types";
 
-type Step = Record<string, { direction: string[] }>[];
 type ParseInput = (input: string) => {
   guard: Guard;
   obstacles: Obstacles;
   matrix: string[][];
-  steps: Step;
+  steps: Steps;
 };
-
-// [{ "1": { direction: ["N", "E"] } }];
 
 export const parseInput: ParseInput = (input: string) => {
   const lines = splitByLine(input);
   const obstacles = {} as Obstacles;
   let guard = {} as Guard;
-  const steps = [] as Step;
+  const steps = {} as Steps;
 
   const matrix = lines.reduce((outerAcc, row, rowIndex) => {
     obstacles[rowIndex] = [];
@@ -46,7 +43,6 @@ export const parseInput: ParseInput = (input: string) => {
               break;
           }
           guard = { col: colIndex, row: rowIndex, direction };
-          steps[rowIndex][colIndex] = { direction: Array.from(direction) };
         }
 
         return [...innerAcc, col];

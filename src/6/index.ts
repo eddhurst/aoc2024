@@ -1,70 +1,27 @@
 import { basic } from "./prompts/6.basic";
 import { prompt } from "./prompts/6.prompt";
 import { parseInput } from "./parseInput";
-import {
-  findObstacleEast,
-  findObstacleNorth,
-  findObstacleSouth,
-  findObstacleWest,
-} from "./findObstacles";
-import { Guard } from "./types";
+import { willGuardLoop } from "./willGuardLoop";
 
+// TODO: The answer is off by 1 (+1) for some reason.
 const { guard, obstacles, matrix, steps } = parseInput(prompt);
 const roomSize = { height: matrix.length, width: matrix[0].length };
 
-let guardPosition = guard;
-let newPosition = guardPosition;
-let newSteps = 0;
-while (guardPosition.direction !== "X") {
-  switch (guardPosition.direction) {
-    case "N":
-      console.info("check north");
-      newPosition = findObstacleNorth(guardPosition, obstacles, roomSize);
-      newSteps = guardPosition.row - newPosition.row;
+let resultsInLoop = 0;
+for (let row = 0; row < roomSize.height; row++) {
+  for (let col = 0; col < roomSize.width; col++) {
+    const resetGuard = structuredClone(guard);
+    const newObstacles = structuredClone(obstacles);
+    const newSteps = structuredClone(steps);
+    newObstacles[row].push(col);
 
-      for (let i = 0; i <= newSteps; i++) {
-        steps[Math.max(guardPosition.row - i, 0)].add(guardPosition.col);
-      }
-      break;
-    case "E":
-      console.info("check east");
-      newPosition = findObstacleEast(guardPosition, obstacles, roomSize);
-      newSteps = newPosition.col - guardPosition.col;
+    if (willGuardLoop(resetGuard, newObstacles, roomSize, newSteps)) {
+      resultsInLoop++;
+    }
 
-      for (let i = 0; i <= newSteps; i++) {
-        steps[guardPosition.row].add(
-          Math.min(guardPosition.col + i, roomSize.width - 1),
-        );
-      }
-      break;
-    case "S":
-      console.info("check south");
-      newPosition = findObstacleSouth(guardPosition, obstacles, roomSize);
-      newSteps = newPosition.row - guardPosition.row;
-
-      for (let i = 0; i <= newSteps; i++) {
-        steps[Math.min(guardPosition.row + i, roomSize.height - 1)].add(
-          guardPosition.col,
-        );
-      }
-      break;
-    case "W":
-      console.info("check west");
-      newPosition = findObstacleWest(guardPosition, obstacles, roomSize);
-      newSteps = guardPosition.col - newPosition.col;
-
-      for (let i = 0; i <= newSteps; i++) {
-        steps[guardPosition.row].add(Math.max(guardPosition.col - i, 0));
-      }
-      break;
+    // remove again, just in case of mutation errors?
+    newObstacles[row].splice(newObstacles[row].indexOf(col), 1);
   }
-
-  console.info(guardPosition, "guardPosition");
-  console.info(newPosition, "newPosition");
-  guardPosition = newPosition as Guard;
 }
 
-const total = steps.reduce((totalSteps, stepsInRow) => {
-  return totalSteps + stepsInRow.size;
-}, 0);
-console.info(`${total} distinct steps taken`);
+console.info(`${resultsInLoop} potential loop opportunities`);
