@@ -24,6 +24,10 @@ export const walkTrail: WalkTrail = (
     return 1;
   }
 
+  // console.info(
+  //   `currently standing on [${row},${col}] (${matrix[row][col]}m), was previously ${lastStepHeight}m`,
+  // );
+
   // if we are here, we are in the middle of a viable trail.
 
   let viableTrails = 0;
