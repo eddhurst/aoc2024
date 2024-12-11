@@ -1,87 +1,111 @@
 type WalkTrail = (
   matrix: number[][],
   trailHead: { row: number; col: number },
-  lastStep: { lastStepHeight: number; cameFrom: string },
+  lastStep: {
+    lastStepHeight: number;
+    cameFrom: string;
+    prevRow: number;
+    prevCol: number;
+  },
   parkSize: { width: number; height: number },
   pathTaken: string,
-) => number;
+) => string[];
 
 export const walkTrail: WalkTrail = (
   matrix,
   { row, col },
-  { lastStepHeight, cameFrom },
+  { lastStepHeight, cameFrom, prevRow, prevCol },
   parkSize,
   pathTaken,
 ) => {
   // trail is too steep
   if (cameFrom !== "X" && matrix[row][col] !== lastStepHeight + 1) {
-    return 0;
+    return [`[${prevRow},${prevCol}] = ${lastStepHeight}`];
   }
 
   // trail is complete. Wind back.
   if (lastStepHeight === 8 && matrix[row][col] === 9) {
-    console.info(`[${row}, ${col}] is a valid trail - ${pathTaken}`);
-    return 1;
+    return [`[${row},${col}] = ${matrix[row][col]}`];
   }
-
-  // console.info(
-  //   `currently standing on [${row},${col}] (${matrix[row][col]}m), was previously ${lastStepHeight}m`,
-  // );
 
   // if we are here, we are in the middle of a viable trail.
 
-  let viableTrails = 0;
+  const viableTrails = [] as string[];
 
   if (cameFrom !== "N" && row !== 0) {
-    const north = walkTrail(
+    walkTrail(
       matrix,
       { row: row - 1, col },
-      { lastStepHeight: matrix[row][col], cameFrom: "S" },
+      {
+        lastStepHeight: matrix[row][col],
+        cameFrom: "S",
+        prevRow: row,
+        prevCol: col,
+      },
       parkSize,
       `${pathTaken}, N`,
-    );
-    if (north) {
-      viableTrails += north;
-    }
+    ).forEach((x) => {
+      if (x[x.length - 1] === "9") {
+        viableTrails.push(x);
+      }
+    });
   }
 
   if (cameFrom !== "E" && col !== parkSize.width) {
-    const east = walkTrail(
+    walkTrail(
       matrix,
       { row, col: col + 1 },
-      { lastStepHeight: matrix[row][col], cameFrom: "W" },
+      {
+        lastStepHeight: matrix[row][col],
+        cameFrom: "W",
+        prevRow: row,
+        prevCol: col,
+      },
       parkSize,
       `${pathTaken}, E`,
-    );
-    if (east) {
-      viableTrails += east;
-    }
+    ).forEach((x) => {
+      if (x[x.length - 1] === "9") {
+        viableTrails.push(x);
+      }
+    });
   }
 
   if (cameFrom !== "S" && row !== parkSize.height) {
-    const south = walkTrail(
+    walkTrail(
       matrix,
       { row: row + 1, col },
-      { lastStepHeight: matrix[row][col], cameFrom: "N" },
+      {
+        lastStepHeight: matrix[row][col],
+        cameFrom: "N",
+        prevRow: row,
+        prevCol: col,
+      },
       parkSize,
       `${pathTaken}, S`,
-    );
-    if (south) {
-      viableTrails += south;
-    }
+    ).forEach((x) => {
+      if (x[x.length - 1] === "9") {
+        viableTrails.push(x);
+      }
+    });
   }
 
   if (cameFrom !== "W" && col !== 0) {
-    const west = walkTrail(
+    walkTrail(
       matrix,
       { row, col: col - 1 },
-      { lastStepHeight: matrix[row][col], cameFrom: "E" },
+      {
+        lastStepHeight: matrix[row][col],
+        cameFrom: "E",
+        prevRow: row,
+        prevCol: col,
+      },
       parkSize,
       `${pathTaken}, W`,
-    );
-    if (west) {
-      viableTrails += west;
-    }
+    ).forEach((x) => {
+      if (x[x.length - 1] === "9") {
+        viableTrails.push(x);
+      }
+    });
   }
 
   return viableTrails;
