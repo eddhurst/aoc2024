@@ -3,8 +3,9 @@ import {argsAsString} from "../utils/argsAsString";
 import {example} from "./prompts/12.example";
 import {logResult} from "../utils/log";
 import {prompt} from "./prompts/12.prompt";
+import {findCorners} from "./findCorners";
 
-const { matrix, plots } = parseInput(prompt);
+const { matrix, plots, allotmentSize } = parseInput(prompt);
 
 let alreadyVisited = new Set();
 let contiguous = [] as Plot[];
@@ -53,7 +54,7 @@ const deriveContiguous: DeriveContiguous = (plots) => {
 
     return totalCost + vegGroups.reduce((groupsArea, group, groupIndex) => {
       const perimeter = group.contiguous.reduce((edges, plot) => {
-        return edges + plot.fencePanels
+        return edges + findCorners(plot, matrix, allotmentSize, true)
       }, 0);
 
       const area = group.contiguous.length;

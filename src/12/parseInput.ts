@@ -1,5 +1,5 @@
 import { splitByLine } from "../utils/splitByLine";
-import { checkDirections } from "./checkDirections";
+import {checkDirections, Edges} from "./checkDirections";
 
 export type Plot = {
   row: number;
@@ -7,14 +7,17 @@ export type Plot = {
   veg: string;
   fencePanels: number;
   contiguous: string[];
+  edges: Edges
 };
 
 export type Plots = Record<string, Plot[]>;
 
+export type Allotment = { width: number; height: number };
+
 type ParseInput = (input: string) => {
   matrix: Plot[][]; // Losing the plot here
   plots: Plots;
-  allotmentSize: { width: number; height: number };
+  allotmentSize: Allotment;
 };
 
 export const parseInput: ParseInput = (input) => {
@@ -26,7 +29,7 @@ export const parseInput: ParseInput = (input) => {
     return [
       ...outerAcc,
       row.split("").reduce((innerAcc, col, colIndex) => {
-        const { fencePanels, contiguous } = checkDirections(
+        const { fencePanels, contiguous, edges } = checkDirections(
           { row: rowIndex, col: colIndex },
           lines,
         );
@@ -38,16 +41,17 @@ export const parseInput: ParseInput = (input) => {
             veg: col,
             fencePanels,
             contiguous,
+            edges,
           });
         } else {
           plots[col] = [
-            { row: rowIndex, col: colIndex, veg: col, fencePanels, contiguous },
+            { row: rowIndex, col: colIndex, veg: col, fencePanels, contiguous, edges },
           ];
         }
 
         return [
           ...innerAcc,
-          { row: rowIndex, col: colIndex, veg: col, fencePanels, contiguous },
+          { row: rowIndex, col: colIndex, veg: col, fencePanels, contiguous, edges },
         ];
       }, [] as Plot[]),
     ];
