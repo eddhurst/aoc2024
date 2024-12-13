@@ -11,7 +11,6 @@ export const checkDirections: CheckDirections = ({ row, col }, lines) => {
 
   const contiguous = [];
 
-  // For each group, read all the fencepost data, and multiply by length.
   // North
   if (row !== 0) {
     if (lines[row - 1][col] !== vegetable) {
