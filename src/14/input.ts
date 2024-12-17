@@ -15,7 +15,7 @@ const debug = [
   },
 ];
 
-const WAIT = 4000;
+const WAIT = 10000;
 const finalRobots = [] as Position[][];
 
 for (let r = 0; r < robots.length; r++) {
@@ -67,15 +67,21 @@ const totalQuadrants = [] as {
   q3: number;
   q4: number;
 }[];
-for (let s = 0; s < WAIT; s++) {
+for (let s = 7773; s < 7774; s++) {
   const thisSecondMap = generateEmpty(map);
 
   finalRobots[s].forEach((robot) => {
     addLocator({ col: robot.col, row: robot.row }, thisSecondMap);
   });
 
-  console.info(thisSecondMap);
-  console.info("\n\n\n");
+  /** We can see a pattern where one axis lines up, but not the other
+   * to that end, let's keep logging at that interval and eventually the other axis will line up to make a tree
+   * **/
+  if ((s - 97) % 101 === 0) {
+    console.info(`=====${s}======`);
+    console.info(thisSecondMap);
+    console.info("\n\n\n");
+  }
 
   const secondQuadrants = finalRobots[s].reduce(
     (quadrants, robot) => {
