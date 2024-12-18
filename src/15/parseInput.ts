@@ -18,12 +18,15 @@ type ParseInput = (input: string) => {
   instructions: { direction: Direction; instruction: string }[];
   matrix: Tile[][];
   room: { width: number; height: number };
+  player: { row: number; col: number };
 };
 
-const parseInput: ParseInput = (input) => {
+export const parseInput: ParseInput = (input) => {
   const [map, instructions] = input.split("\n\n");
 
   const lines = splitByLine(map);
+
+  let player;
 
   const matrix = lines.reduce((outerAcc, row, rowIndex) => {
     return [
@@ -36,6 +39,10 @@ const parseInput: ParseInput = (input) => {
             break;
           case "O":
             type = TILE_BOX as TileType;
+            break;
+          case "@":
+            type = TILE_TILE as TileType;
+            player = { row: rowIndex, col: colIndex };
             break;
           default:
             type = TILE_TILE as TileType;
@@ -74,8 +81,5 @@ const parseInput: ParseInput = (input) => {
       return { direction, instruction: x };
     });
 
-  return { matrix, room, instructions: parsedInstructions };
+  return { matrix, room, instructions: parsedInstructions, player };
 };
-
-const { matrix } = parseInput(basic);
-console.info(matrix);
