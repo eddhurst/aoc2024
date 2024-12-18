@@ -1,9 +1,10 @@
-import { basic } from "./prompts/15.basic";
 import { splitByLine } from "../utils/splitByLine";
 
+export const TILE_BOX_LHS = "BOX_LHS";
+export const TILE_BOX_RHS = "BOX_RHS";
 export const TILE_WALL = "WALL";
-export const TILE_BOX = "BOX";
 export const TILE_TILE = "TILE";
+export const TILE_PLAYER = "PLAYER";
 
 export const DIRECTION_NORTH = "NORTH";
 export const DIRECTION_EAST = "EAST";
@@ -11,8 +12,8 @@ export const DIRECTION_SOUTH = "SOUTH";
 export const DIRECTION_WEST = "WEST";
 
 type Direction = "NORTH" | "EAST" | "SOUTH" | "WEST";
-type TileType = "TILE" | "BOX" | "WALL";
-type Tile = { col: number; row: number; type: TileType };
+type TileType = "TILE" | "BOX_LHS" | "BOX_RHS" | "WALL" | "PLAYER";
+export type Tile = { col: number; row: number; type: TileType };
 
 type ParseInput = (input: string) => {
   instructions: { direction: Direction; instruction: string }[];
@@ -32,24 +33,34 @@ export const parseInput: ParseInput = (input) => {
     return [
       ...outerAcc,
       row.split("").reduce((innerAcc, col, colIndex) => {
-        let type;
+        let lhsType;
+        let rhsType;
+
         switch (col) {
           case "#":
-            type = TILE_WALL as TileType;
+            lhsType = TILE_WALL as TileType;
+            rhsType = TILE_WALL as TileType;
             break;
           case "O":
-            type = TILE_BOX as TileType;
+            lhsType = TILE_BOX_LHS as TileType;
+            rhsType = TILE_BOX_RHS as TileType;
             break;
           case "@":
-            type = TILE_TILE as TileType;
-            player = { row: rowIndex, col: colIndex };
+            lhsType = TILE_PLAYER as TileType;
+            rhsType = TILE_TILE as TileType;
+            player = { row: rowIndex, col: innerAcc.length };
             break;
           default:
-            type = TILE_TILE as TileType;
+            lhsType = TILE_TILE as TileType;
+            rhsType = TILE_TILE as TileType;
             break;
         }
 
-        return [...innerAcc, { row: rowIndex, col: colIndex, type }];
+        return [
+          ...innerAcc,
+          { row: rowIndex, col: innerAcc.length, type: lhsType },
+          { row: rowIndex, col: innerAcc.length + 1, type: rhsType },
+        ];
       }, [] as Tile[]),
     ];
   }, [] as Tile[][]);
@@ -58,6 +69,7 @@ export const parseInput: ParseInput = (input) => {
 
   const parsedInstructions = instructions
     .replaceAll("\n", "")
+    .replaceAll(" ", "")
     .split("")
     .map((x) => {
       let direction;
@@ -75,11 +87,16 @@ export const parseInput: ParseInput = (input) => {
           direction = DIRECTION_WEST as Direction;
           break;
         default:
+          console.info(direction);
           throw new Error("no direction found");
       }
 
       return { direction, instruction: x };
     });
+
+  if (!player) {
+    throw new Error("player not found");
+  }
 
   return { matrix, room, instructions: parsedInstructions, player };
 };
