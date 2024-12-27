@@ -28,6 +28,7 @@ const addTowelStripes: AddTowelStripes = (string, towels) => {
 
 type ParseInput = (input: string) => {
   towelTree: TowelTree;
+  towels: string[];
   patterns: string[];
 };
 export const parseInput: ParseInput = (input) => {
@@ -37,7 +38,9 @@ export const parseInput: ParseInput = (input) => {
     return addTowelStripes(name, stripes);
   }, {});
 
+  const towels = towelsString.split(", ");
+
   const patterns = splitByLine(patternsString);
 
-  return { towelTree, patterns };
+  return { towelTree, towels, patterns };
 };
