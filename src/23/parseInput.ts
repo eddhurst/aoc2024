@@ -4,7 +4,7 @@ type ParseInput = (input: string) => Record<string, string[]>;
 export const parseInput: ParseInput = (input) => {
   const lines = splitByLine(input);
 
-  return lines.reduce(
+  const networks = lines.reduce(
     (network, line) => {
       const [primary, secondary] = line.split("-");
 
@@ -31,4 +31,10 @@ export const parseInput: ParseInput = (input) => {
     },
     {} as Record<string, string[]>,
   );
+
+  Object.keys(networks).forEach((key) => {
+    networks[key].push(key);
+  });
+
+  return networks;
 };

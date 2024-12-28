@@ -6,7 +6,7 @@ const network = parseInput(prompt);
 
 const mockNetwork = { co: true };
 
-// console.info(network);
+console.time("part1");
 
 const matches = new Set();
 
@@ -82,6 +82,8 @@ const result = Object.keys(network).reduce((acc, terminal) => {
 }, 0);
 
 // console.info(result);
+
+console.timeEnd("part1");
 
 console.info(Array.from(matches).sort().join("\n"));
 
